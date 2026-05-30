@@ -1,0 +1,2012 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Karta Pacjenta Trychologicznego — Michael Kazara</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black: #111111;
+  --gray-dark: #2a2a2a;
+  --gray-mid: #555;
+  --gray-light: #999;
+  --gray-border: #e0ddd8;
+  --gray-bg: #f7f5f2;
+  --gray-section: #eeece8;
+  --white: #ffffff;
+  --gold: #b8975a;
+  --gold-light: #f0e8d8;
+  --gold-dark: #8a6e3a;
+  --red: #c0392b;
+  --green: #2e7d52;
+  --blue: #1a5a8a;
+  --radius: 5px;
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 4px 24px rgba(0,0,0,0.12);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--gray-bg);
+  color: var(--black);
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ===== LAYOUT ===== */
+.app { display: flex; min-height: 100vh; }
+
+.sidebar {
+  width: 280px;
+  min-width: 280px;
+  background: var(--black);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 100;
+  overflow-y: auto;
+}
+
+.main {
+  margin-left: 280px;
+  flex: 1;
+  min-height: 100vh;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar-logo {
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.sidebar-logo .brand {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 500;
+  display: block;
+  margin-bottom: 3px;
+}
+
+.sidebar-logo .title {
+  font-size: 15px;
+  color: white;
+  font-weight: 600;
+  display: block;
+}
+
+.sidebar-logo .subtitle {
+  font-size: 11px;
+  color: rgba(255,255,255,0.35);
+  display: block;
+  margin-top: 2px;
+}
+
+.sidebar-search {
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.sidebar-search input {
+  width: 100%;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius);
+  padding: 7px 10px;
+  color: white;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  outline: none;
+}
+
+.sidebar-search input::placeholder { color: rgba(255,255,255,0.3); }
+.sidebar-search input:focus { border-color: var(--gold); }
+
+.sidebar-actions {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.btn-new-patient {
+  width: 100%;
+  background: var(--gold);
+  color: var(--black);
+  border: none;
+  border-radius: var(--radius);
+  padding: 9px 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.03em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: background 0.15s;
+}
+
+.btn-new-patient:hover { background: #caa86a; }
+
+.patients-list-header {
+  padding: 14px 16px 8px;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  font-weight: 500;
+}
+
+.patient-item {
+  padding: 10px 16px;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: all 0.12s;
+}
+
+.patient-item:hover { background: rgba(255,255,255,0.04); }
+
+.patient-item.active {
+  background: rgba(184,151,90,0.12);
+  border-left-color: var(--gold);
+}
+
+.patient-item-name {
+  font-size: 13px;
+  color: white;
+  font-weight: 500;
+  display: block;
+}
+
+.patient-item-meta {
+  font-size: 11px;
+  color: rgba(255,255,255,0.35);
+  display: flex;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.patient-item-meta .badge {
+  background: rgba(184,151,90,0.2);
+  color: var(--gold);
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-family: 'DM Mono', monospace;
+}
+
+.sidebar-empty {
+  padding: 24px 16px;
+  text-align: center;
+  color: rgba(255,255,255,0.25);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* ===== WELCOME SCREEN ===== */
+.welcome-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 40px;
+}
+
+.welcome-content {
+  text-align: center;
+  max-width: 400px;
+}
+
+.welcome-icon {
+  width: 64px;
+  height: 64px;
+  background: var(--gold-light);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  font-size: 28px;
+}
+
+.welcome-content h2 {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--black);
+}
+
+.welcome-content p {
+  color: var(--gray-mid);
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+/* ===== PATIENT DETAIL ===== */
+.patient-header {
+  background: var(--black);
+  color: white;
+  padding: 20px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.patient-header-left h1 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+
+.patient-header-left .meta {
+  font-size: 12px;
+  color: rgba(255,255,255,0.45);
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.patient-header-left .meta span { display: flex; align-items: center; gap: 4px; }
+
+.patient-header-actions { display: flex; gap: 8px; }
+
+.btn {
+  padding: 8px 16px;
+  border-radius: var(--radius);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-primary { background: var(--gold); color: var(--black); font-weight: 600; }
+.btn-primary:hover { background: #caa86a; }
+.btn-outline { background: transparent; color: white; border: 1px solid rgba(255,255,255,0.2); }
+.btn-outline:hover { background: rgba(255,255,255,0.08); }
+.btn-danger { background: transparent; color: #e74c3c; border: 1px solid rgba(231,76,60,0.3); }
+.btn-danger:hover { background: rgba(231,76,60,0.1); }
+.btn-sm { padding: 5px 10px; font-size: 12px; }
+
+/* ===== TABS ===== */
+.patient-tabs {
+  background: white;
+  border-bottom: 1px solid var(--gray-border);
+  padding: 0 32px;
+  display: flex;
+  gap: 0;
+}
+
+.tab {
+  padding: 14px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-mid);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.12s;
+  white-space: nowrap;
+}
+
+.tab:hover { color: var(--black); }
+.tab.active { color: var(--gold-dark); border-bottom-color: var(--gold); }
+
+/* ===== CONTENT AREA ===== */
+.patient-content { padding: 28px 32px; max-width: 900px; }
+
+/* ===== SECTIONS ===== */
+.section {
+  background: white;
+  border: 1px solid var(--gray-border);
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.section-header {
+  padding: 13px 18px;
+  background: var(--gray-section);
+  border-bottom: 1px solid var(--gray-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+}
+
+.section-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-label {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gray-light);
+  font-weight: 500;
+  font-family: 'DM Mono', monospace;
+}
+
+.section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--black);
+}
+
+.section-chevron {
+  color: var(--gray-light);
+  font-size: 12px;
+  transition: transform 0.2s;
+}
+
+.section.collapsed .section-chevron { transform: rotate(-90deg); }
+.section.collapsed .section-body { display: none; }
+
+.section-body { padding: 18px; }
+
+/* ===== FORM ELEMENTS ===== */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+.form-grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; }
+.form-full { grid-column: 1 / -1; }
+
+.field { display: flex; flex-direction: column; gap: 4px; }
+
+.field label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gray-mid);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.field input,
+.field select,
+.field textarea {
+  padding: 8px 10px;
+  border: 1px solid var(--gray-border);
+  border-radius: var(--radius);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: var(--black);
+  background: white;
+  outline: none;
+  transition: border-color 0.12s;
+  width: 100%;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(184,151,90,0.12); }
+
+.field textarea { resize: vertical; min-height: 70px; }
+
+/* ===== CHECKBOXES / RADIO ===== */
+.check-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 6px; }
+.check-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+
+.check-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border: 1px solid var(--gray-border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.12s;
+  font-size: 13px;
+}
+
+.check-item:hover { border-color: var(--gold); background: var(--gold-light); }
+.check-item input[type="checkbox"],
+.check-item input[type="radio"] { accent-color: var(--gold); width: 14px; height: 14px; cursor: pointer; }
+.check-item.checked { border-color: var(--gold); background: var(--gold-light); }
+
+.radio-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ===== SCALE ===== */
+.scale-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.scale-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--gray-border);
+  background: white;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.12s;
+  font-family: 'DM Mono', monospace;
+}
+
+.scale-btn:hover { border-color: var(--gold); color: var(--gold-dark); }
+.scale-btn.active { background: var(--gold); border-color: var(--gold); color: white; }
+
+.scale-label { font-size: 11px; color: var(--gray-light); margin-left: 4px; }
+
+/* ===== VISITS TIMELINE ===== */
+.visits-timeline { }
+
+.visit-card {
+  border: 1px solid var(--gray-border);
+  border-radius: var(--radius);
+  margin-bottom: 12px;
+  overflow: hidden;
+  background: white;
+}
+
+.visit-card-header {
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  background: var(--gray-bg);
+  border-bottom: 1px solid var(--gray-border);
+}
+
+.visit-card.expanded .visit-card-header { background: var(--black); color: white; }
+
+.visit-card-header-left { display: flex; align-items: center; gap: 10px; }
+
+.visit-number {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--gold);
+  color: var(--black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: 'DM Mono', monospace;
+  flex-shrink: 0;
+}
+
+.visit-card.expanded .visit-number { background: var(--gold); }
+
+.visit-info { }
+.visit-date { font-size: 13px; font-weight: 600; }
+.visit-card.expanded .visit-date { color: white; }
+.visit-type-tags { display: flex; gap: 4px; margin-top: 3px; flex-wrap: wrap; }
+
+.visit-type-tag {
+  font-size: 10px;
+  padding: 1px 7px;
+  border-radius: 3px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.tag-kontrolna { background: rgba(46,125,82,0.12); color: var(--green); }
+.tag-zabiegowa { background: rgba(26,90,138,0.12); color: var(--blue); }
+.tag-diagnostyczna { background: rgba(184,151,90,0.15); color: var(--gold-dark); }
+.tag-konsultacja { background: rgba(100,100,100,0.1); color: var(--gray-mid); }
+
+.visit-card.expanded .visit-type-tag { opacity: 0.85; }
+
+.visit-card-actions { display: flex; gap: 6px; align-items: center; }
+.visit-card-chevron { font-size: 12px; color: var(--gray-light); transition: transform 0.2s; }
+.visit-card.expanded .visit-card-chevron { transform: rotate(180deg); color: rgba(255,255,255,0.5); }
+
+.visit-card-body {
+  padding: 18px;
+  display: none;
+}
+
+.visit-card.expanded .visit-card-body { display: block; }
+
+/* ===== SUBSECTIONS ===== */
+.subsection { margin-bottom: 20px; }
+
+.subsection-title {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gray-light);
+  font-weight: 600;
+  font-family: 'DM Mono', monospace;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--gray-border);
+}
+
+/* ===== TRICHOSCOPY BOXES ===== */
+.trichoscopy-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.tricho-box {
+  border: 1px solid var(--gray-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.tricho-box-header {
+  padding: 8px 12px;
+  background: var(--gray-section);
+  border-bottom: 1px solid var(--gray-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tricho-box-header .mag {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--gold-dark);
+  background: var(--gold-light);
+  padding: 2px 7px;
+  border-radius: 3px;
+}
+
+.tricho-box-header .label { font-size: 12px; font-weight: 600; color: var(--black); }
+.tricho-box-body { padding: 10px 12px; }
+.tricho-box-body textarea { min-height: 90px; }
+
+/* ===== DIVIDER ===== */
+.divider { border: none; border-top: 1px solid var(--gray-border); margin: 14px 0; }
+
+/* ===== MODAL ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal {
+  background: white;
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 680px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+}
+
+.modal-header {
+  padding: 18px 22px;
+  background: var(--black);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.modal-header h2 { font-size: 16px; font-weight: 600; }
+.modal-header p { font-size: 12px; color: rgba(255,255,255,0.45); margin-top: 2px; }
+
+.modal-close {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.5);
+  font-size: 20px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px;
+}
+
+.modal-body { padding: 22px; }
+
+.modal-footer {
+  padding: 14px 22px;
+  border-top: 1px solid var(--gray-border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  background: var(--gray-bg);
+  position: sticky;
+  bottom: 0;
+}
+
+/* ===== VISIT TYPE SELECTOR ===== */
+.visit-type-selector { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.visit-type-option {
+  flex: 1;
+  min-width: 120px;
+  padding: 10px 12px;
+  border: 2px solid var(--gray-border);
+  border-radius: var(--radius);
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+
+.visit-type-option:hover { border-color: var(--gold); }
+
+.visit-type-option.selected { border-color: var(--gold); background: var(--gold-light); }
+
+.visit-type-option .icon { font-size: 20px; display: block; margin-bottom: 4px; }
+.visit-type-option .name { font-size: 12px; font-weight: 600; color: var(--black); }
+
+/* ===== PATIENT SUMMARY CARDS ===== */
+.summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+
+.summary-card {
+  background: white;
+  border: 1px solid var(--gray-border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+
+.summary-card .num {
+  font-size: 24px;
+  font-weight: 700;
+  font-family: 'DM Mono', monospace;
+  color: var(--gold-dark);
+  display: block;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.summary-card .lbl { font-size: 11px; color: var(--gray-light); }
+
+/* ===== NO VISITS ===== */
+.no-visits {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--gray-light);
+}
+
+.no-visits p { font-size: 14px; margin-top: 8px; }
+
+/* ===== PRINT ===== */
+@media print {
+  .sidebar, .patient-tabs, .patient-header-actions, .visit-card-actions, .modal-overlay { display: none !important; }
+  .main { margin-left: 0; }
+  .patient-content { padding: 16px; }
+  .visit-card.expanded .visit-card-body { display: block !important; }
+  .section.collapsed .section-body { display: block !important; }
+  body { font-size: 12px; }
+  .visit-card { break-inside: avoid; }
+}
+
+/* ===== UTILS ===== */
+.hidden { display: none !important; }
+.text-gold { color: var(--gold); }
+.text-muted { color: var(--gray-light); font-size: 12px; }
+.mt-8 { margin-top: 8px; }
+.mt-12 { margin-top: 12px; }
+.flex { display: flex; }
+.flex-between { display: flex; justify-content: space-between; align-items: center; }
+.gap-8 { gap: 8px; }
+
+.intake-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 3px;
+  background: rgba(46,125,82,0.1);
+  color: var(--green);
+  font-weight: 500;
+}
+
+.intake-badge.missing {
+  background: rgba(192,57,43,0.1);
+  color: var(--red);
+}
+
+.info-row {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--gray-border);
+  font-size: 13px;
+}
+
+.info-row:last-child { border-bottom: none; }
+.info-row .key { color: var(--gray-mid); min-width: 160px; font-size: 12px; }
+.info-row .val { font-weight: 500; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <span class="brand">Michael Kazara</span>
+      <span class="title">Karta Pacjenta</span>
+      <span class="subtitle">System dokumentacji trychologicznej</span>
+    </div>
+    <div class="sidebar-search">
+      <input type="text" placeholder="Szukaj pacjenta..." id="searchInput" oninput="filterPatients(this.value)">
+    </div>
+    <div class="sidebar-actions">
+      <button class="btn-new-patient" onclick="openNewPatientModal()">
+        <span>+</span> Nowy pacjent
+      </button>
+      <div style="display:flex;gap:6px;margin-top:8px;">
+        <button onclick="exportData()" style="flex:1;background:rgba(184,151,90,0.15);color:var(--gold);border:1px solid rgba(184,151,90,0.3);border-radius:var(--radius);padding:7px 8px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.background='rgba(184,151,90,0.25)'" onmouseout="this.style.background='rgba(184,151,90,0.15)'">⬇ Eksportuj</button>
+        <button onclick="document.getElementById('importFile').click()" style="flex:1;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6);border:1px solid rgba(255,255,255,0.12);border-radius:var(--radius);padding:7px 8px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.06)'">⬆ Importuj</button>
+        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(this)">
+      </div>
+    </div>
+    <div class="patients-list-header">Pacjenci</div>
+    <div id="patientsList"></div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main" id="mainContent">
+    <div class="welcome-screen" id="welcomeScreen">
+      <div class="welcome-content">
+        <div class="welcome-icon">🔬</div>
+        <h2>Dokumentacja trychologiczna</h2>
+        <p>Wybierz pacjenta z listy lub dodaj nowego, aby rozpocząć prowadzenie dokumentacji klinicznej.</p>
+        <button class="btn btn-primary" onclick="openNewPatientModal()">+ Dodaj pierwszego pacjenta</button>
+      </div>
+    </div>
+    <div id="patientView" class="hidden"></div>
+  </main>
+</div>
+
+<!-- MODAL: NOWY PACJENT -->
+<div class="modal-overlay hidden" id="newPatientModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h2>Nowy pacjent</h2>
+        <p>Dane podstawowe — wywiad zostanie uzupełniony na I wizycie</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('newPatientModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field">
+          <label>Imię i nazwisko *</label>
+          <input type="text" id="np_name" placeholder="np. Anna Kowalska">
+        </div>
+        <div class="field">
+          <label>Data urodzenia</label>
+          <input type="date" id="np_dob">
+        </div>
+        <div class="field">
+          <label>Telefon</label>
+          <input type="tel" id="np_phone" placeholder="+48 ...">
+        </div>
+        <div class="field">
+          <label>Email</label>
+          <input type="email" id="np_email" placeholder="email@...">
+        </div>
+        <div class="field form-full">
+          <label>Główna dolegliwość (skrót)</label>
+          <input type="text" id="np_complaint" placeholder="np. wypadanie włosów, łojotok, łupież">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" style="color:#555;border-color:#ddd;" onclick="closeModal('newPatientModal')">Anuluj</button>
+      <button class="btn btn-primary" onclick="saveNewPatient()">Utwórz kartę pacjenta</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: NOWA WIZYTA -->
+<div class="modal-overlay hidden" id="newVisitModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h2>Nowa wizyta</h2>
+        <p id="newVisitPatientName"></p>
+      </div>
+      <button class="modal-close" onclick="closeModal('newVisitModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field" style="margin-bottom:14px;">
+        <label>Data wizyty *</label>
+        <input type="date" id="nv_date">
+      </div>
+      <div class="field" style="margin-bottom:14px;">
+        <label>Typ wizyty (można zaznaczyć kilka)</label>
+        <div class="visit-type-selector" id="visitTypeSelector">
+          <div class="visit-type-option" data-type="kontrolna" onclick="toggleVisitType(this)">
+            <span class="icon">📋</span>
+            <span class="name">Kontrolna</span>
+          </div>
+          <div class="visit-type-option" data-type="zabiegowa" onclick="toggleVisitType(this)">
+            <span class="icon">💉</span>
+            <span class="name">Zabiegowa</span>
+          </div>
+          <div class="visit-type-option" data-type="diagnostyczna" onclick="toggleVisitType(this)">
+            <span class="icon">🔬</span>
+            <span class="name">Diagnostyczna</span>
+          </div>
+          <div class="visit-type-option" data-type="konsultacja" onclick="toggleVisitType(this)">
+            <span class="icon">💬</span>
+            <span class="name">Konsultacja</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" style="color:#555;border-color:#ddd;" onclick="closeModal('newVisitModal')">Anuluj</button>
+      <button class="btn btn-primary" onclick="saveNewVisit()">Utwórz wpis wizyty</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== STATE =====
+let patients = JSON.parse(localStorage.getItem('trichology_patients') || '[]');
+let currentPatientId = null;
+let activeTab = 'wywiad';
+
+function save() {
+  localStorage.setItem('trichology_patients', JSON.stringify(patients));
+}
+
+function getPatient(id) {
+  return patients.find(p => p.id === id);
+}
+
+function genId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2);
+}
+
+// ===== RENDER SIDEBAR =====
+function renderSidebar(filter = '') {
+  const list = document.getElementById('patientsList');
+  const filtered = patients.filter(p =>
+    p.name.toLowerCase().includes(filter.toLowerCase()) ||
+    (p.complaint || '').toLowerCase().includes(filter.toLowerCase())
+  );
+
+  if (filtered.length === 0) {
+    list.innerHTML = `<div class="sidebar-empty">${filter ? 'Brak wyników' : 'Brak pacjentów.<br>Dodaj pierwszego.'}</div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(p => `
+    <div class="patient-item ${p.id === currentPatientId ? 'active' : ''}" onclick="openPatient('${p.id}')">
+      <span class="patient-item-name">${p.name}</span>
+      <div class="patient-item-meta">
+        <span>${p.dob ? calcAge(p.dob) + ' lat' : '—'}</span>
+        <span class="badge">${p.visits ? p.visits.length : 0} wizyt</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterPatients(val) {
+  renderSidebar(val);
+}
+
+function calcAge(dob) {
+  if (!dob) return '—';
+  const d = new Date(dob);
+  const now = new Date();
+  let age = now.getFullYear() - d.getFullYear();
+  if (now < new Date(now.getFullYear(), d.getMonth(), d.getDate())) age--;
+  return age;
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '—';
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('pl-PL', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+// ===== OPEN PATIENT =====
+function openPatient(id) {
+  currentPatientId = id;
+  activeTab = 'wywiad';
+  renderSidebar();
+  renderPatientView();
+  document.getElementById('welcomeScreen').classList.add('hidden');
+  document.getElementById('patientView').classList.remove('hidden');
+}
+
+// ===== RENDER PATIENT VIEW =====
+function renderPatientView() {
+  const p = getPatient(currentPatientId);
+  if (!p) return;
+
+  const age = calcAge(p.dob);
+  const visitCount = (p.visits || []).length;
+  const lastVisit = visitCount > 0 ? p.visits[visitCount - 1].date : null;
+
+  document.getElementById('patientView').innerHTML = `
+    <div class="patient-header">
+      <div class="patient-header-left">
+        <h1>${p.name}</h1>
+        <div class="meta">
+          ${p.dob ? `<span>👤 ${age} lat (ur. ${formatDate(p.dob)})</span>` : ''}
+          ${p.phone ? `<span>📞 ${p.phone}</span>` : ''}
+          ${p.email ? `<span>✉ ${p.email}</span>` : ''}
+          ${p.complaint ? `<span>💬 ${p.complaint}</span>` : ''}
+        </div>
+      </div>
+      <div class="patient-header-actions">
+        <button class="btn btn-primary" onclick="openNewVisitModal()">+ Nowa wizyta</button>
+        <button class="btn btn-outline" onclick="window.print()">🖨 Drukuj</button>
+        <button class="btn btn-danger btn-sm" onclick="deletePatient('${p.id}')">🗑</button>
+      </div>
+    </div>
+
+    <div class="patient-tabs">
+      <div class="tab ${activeTab === 'wywiad' ? 'active' : ''}" onclick="switchTab('wywiad')">📋 Wywiad I wizyty</div>
+      <div class="tab ${activeTab === 'wizyty' ? 'active' : ''}" onclick="switchTab('wizyty')">📅 Historia wizyt (${visitCount})</div>
+    </div>
+
+    <div class="patient-content" id="patientTabContent"></div>
+  `;
+
+  renderActiveTab();
+}
+
+function switchTab(tab) {
+  activeTab = tab;
+  renderPatientView();
+}
+
+function renderActiveTab() {
+  const p = getPatient(currentPatientId);
+  const container = document.getElementById('patientTabContent');
+  if (activeTab === 'wywiad') renderIntakeTab(p, container);
+  else renderVisitsTab(p, container);
+}
+
+// ===== INTAKE FORM =====
+function renderIntakeTab(p, container) {
+  const d = p.intake || {};
+
+  container.innerHTML = `
+    <div style="margin-bottom:16px;" class="flex-between">
+      <div>
+        <span class="text-muted">Wywiad ogólny — I wizyta</span>
+        ${d._saved ? `<span class="intake-badge" style="margin-left:10px;">✓ Zapisany ${formatDate(d._saved)}</span>` : `<span class="intake-badge missing" style="margin-left:10px;">⚠ Niezapełniony</span>`}
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="saveIntake()">💾 Zapisz wywiad</button>
+    </div>
+
+    <!-- DANE OSOBOWE -->
+    <div class="section" id="sec_dane">
+      <div class="section-header" onclick="toggleSection('sec_dane')">
+        <div class="section-header-left">
+          <span class="section-label">01</span>
+          <span class="section-title">Dane i informacje ogólne</span>
+        </div>
+        <span class="section-chevron">▾</span>
+      </div>
+      <div class="section-body">
+        <div class="form-grid">
+          <div class="field">
+            <label>Zawód / zajęcie</label>
+            <input type="text" id="i_zawod" value="${d.zawod||''}" placeholder="np. nauczyciel, pracownik biurowy">
+          </div>
+          <div class="field">
+            <label>Stan cywilny</label>
+            <select id="i_stan">
+              ${['—','wolny/a','w związku','zamężna/żonaty','rozwiedziony/a','wdowa/wdowiec'].map(x=>`<option ${d.stan===x?'selected':''}>${x}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field">
+            <label>Miejsce zamieszkania</label>
+            <select id="i_miejsce">
+              ${['—','miasto duże (>100k)','miasto średnie','miasto małe','wieś'].map(x=>`<option ${d.miejsce===x?'selected':''}>${x}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field">
+            <label>Woda w domu</label>
+            <select id="i_woda">
+              ${['—','twarda','miękka','filtrowana','nieznana'].map(x=>`<option ${d.woda===x?'selected':''}>${x}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GŁÓWNA DOLEGLIWOŚĆ -->
+    <div class="section" id="sec_dolg">
+      <div class="section-header" onclick="toggleSection('sec_dolg')">
+        <div class="section-header-left">
+          <span class="section-label">02</span>
+          <span class="section-title">Główna dolegliwość</span>
+        </div>
+        <span class="section-chevron">▾</span>
+      </div>
+      <div class="section-body">
+        <div class="field" style="margin-bottom:12px;">
+          <label>Czas trwania</label>
+          <select id="i_czas_dolg">
+            ${['—','< 1 miesiąc','1–3 miesiące','3–6 miesięcy','6–12 miesięcy','1–2 lata','> 2 lata','> 5 lat'].map(x=>`<option ${d.czas_dolg===x?'selected':''}>${x}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field" style="margin-bottom:12px;">
+          <label>Objawy — zaznacz wszystkie pasujące</label>
+          <div class="check-grid">
+            ${['Wypadanie włosów','Przerzedzenie','Łysienie plackowate','Łupież suchy','Łupież tłusty','Łojotok skóry głowy','Świąd skóry głowy','Pieczenie skóry głowy','Rumień / zaczerwienienie','Grudki / krosty','Strupki','Łuski','Pęcherze','Ból skóry głowy','Zmiany zabarwienia włosów','Łamliwość włosów','Suchość włosów','Przetłuszczanie włosów','Cienkie / delikatne włosy','Siwienie przedwczesne','Nadmierne połyskiwanie','Matowe włosy'].map(x=>`
+              <label class="check-item ${(d.objawy||[]).includes(x)?'checked':''}">
+                <input type="checkbox" name="objawy" value="${x}" ${(d.objawy||[]).includes(x)?'checked':''} onchange="this.closest('.check-item').classList.toggle('checked',this.checked)">
+                ${x}
+              </label>`).join('')}
+          </div>
+        </div>
+        <div class="field">
+          <label>Opis własny pacjenta</label>
+          <textarea id="i_opis_dolg" placeholder="Słowami pacjenta...">${d.opis_dolg||''}</textarea>
+        </div>
+        <div class="form-grid mt-12">
+          <div class="field">
+            <label>Nasilenie dolegliwości (1–10)</label>
+            <div class="scale-row" id="scale_nasilenie">
+              ${[1,2,3,4,5,6,7,8,9,10].map(n=>`<button type="button" class="scale-btn ${d.nasilenie==n?'active':''}" onclick="setScale('nasilenie',${n},this)">${n}</button>`).join('')}
+              <span class="scale-label">← słabe / silne →</span>
+            </div>
+          </div>
+          <div class="field">
+            <label>Wpływ na jakość życia (1–10)</label>
+            <div class="scale-row" id="scale_jakosc">
+              ${[1,2,3,4,5,6,7,8,9,10].map(n=>`<button type="button" class="scale-btn ${d.jakosc==n?'active':''}" onclick="setScale('jakosc',${n},this)">${n}</button>`).join('')}
+              <span class="scale-label">← brak / bardzo duży →</span>
+            </div>
+          </div>
+        </div>
+        <div class="form-grid mt-12">
+          <div class="field">
+            <label>Sezonowość objawów</label>
+            <select id="i_sezonowosc">
+              ${['—','przez cały rok','wiosna','lato','jesień','zima','wiosna/jesień','brak wzorca'].map(x=>`<option ${d.sezonowosc===x?'selected':''}>${x}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field">
+            <label>Nagłe czy stopniowe pojawienie</label>
+            <select id="i_pojawienie">
+              ${['—','nagłe (< tydzień)','szybkie (< miesiąc)','stopniowe','niezauważalne'].map(x=>`<option ${d.pojawienie===x?'selected':''}>${x}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WYWIAD MEDYCZNY -->
+    <div class="section" id="sec_med">
+      <div class="section-header" onclick="toggleSection('sec_med')">
+        <div class="section-header-left">
+          <span class="section-label">03</span>
+          <span class="section-title">Wywiad medyczny i choroby przewlekłe</span>
+        </div>
+        <span class="section-chevron">▾</span>
+      </div>
+      <div class="section-body">
+        <div class="field" style="margin-bottom:14px;">
+          <label>Choroby przewlekłe — zaznacz</label>
+          <div class="check-grid">
+            ${['Niedoczynność tarczycy','Nadczynność tarczycy','Hashimoto','Choroba Gravesa-Basedowa','Cukrzyca t.1','Cukrzyca t.2','Insulinooporność','PCOS','Łuszczyca','Łojotokowe zapalenie skóry','Atopowe zapalenie skóry','Łysienie plackowate','Toczeń rumieniowaty','Twardzina','RZS','Anemia (niedokrwistość)','Celiakia','IBD (Crohn/WZJG)','Choroby nerek','Choroby wątroby','Choroby układu krążenia','Nowotwór w wywiadzie','HIV/AIDS','Łuszczyca skóry głowy','Grzybica skóry głowy'].map(x=>`
+              <label class="check-item ${(d.choroby||[]).includes(x)?'checked':''}">
+                <input type="checkbox" name="choroby" value="${x}" ${(d.choroby||[]).includes(x)?'checked':''} onchange="this.closest('.check-item').classList.toggle('checked',this.checked)">
+                ${x}
+              </label>`).join('')}
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:12px;">
+          <label>Inne choroby / komentarz</label>
+          <textarea id="i_inne_choroby" placeholder="Dodatkowe informacje...">${d.inne_choroby||''}</textarea>
+        </div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Operacje / zabiegi chirurgiczne</label>
+            <textarea id="i_operacje" placeholder="Nazwa, rok...">${d.operacje||''}</textarea>
+          </div>
+          <div class="field">
+            <label>Urazy głowy / skóry głowy</label>
+            <textarea id="i_urazy" placeholder="Opis, rok...">${d.urazy||''}</textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEKI I SUPLEMENTY -->
+    <div class="section" id="sec_leki">
+      <div class="section-header" onclick="toggleSection('sec_leki')">
+        <div class="section-header-left">
+          <span class="section-label">04</span>
+          <span class="section-title">Leki i suplementacja</span>
+        </div>
+        <span class="section-chevron">▾</span>
+      </div>
+      <div class="section-body">
+        <div class="field" style="margin-bottom:12px;">
+          <label>Aktualne leki (nazwy, dawki)</label>
+          <textarea id="i_leki" placeholder="np. Euthyrox 50mcg, Metformin 500mg...">${d.leki||''}</textarea>
+        </div>
+        <div class="field" style="margin-bottom:12px;">
+          <label>Aktualna suplementacja</label>
+          <textarea id="i_suplementy" placeholder="np. Biotyna 5000mcg, Cynk 15mg, witamina D3...">${d.suplementy||''}</textarea>
+        </div>
+        <div class="field" style="margin-bottom:12px;">
+          <label>Leki mogące wpływać na wypadanie włosów</label>
+          <div class="check-grid">
+            ${['Antykoncepcja hormonalna','HTZ (terapia hormonalna)','Leki na tarczycę','Leki na nadciśnienie (betablokery)','Leki przeciwdepresyjne','Leki antyepileptyczne','Izotretynoina (Roaccutane)','Chemioterapia','Leki immunosupresyjne','Antykoagulanty','Finasteryd','Minoksydyl'].map(x=>`
+              <label class="check-item ${(d.leki_wplyw||[]).includes(x)?'checked':''}">
+                <input type="checkbox" name="leki_wplyw" value="${x}" ${(d.leki_wplyw||[]).includes(x)?'checked':''} onchange="this.closest('.check-item').classList.toggle('checked',this.checked)">
+                ${x}
+              </label>`).join('')}
+          </div>
+        </div>
+        <div class="field">
+          <label>Alergie na leki / składniki</label>
+          <input type="text" id="i_alergie_leki" value="${d.alergie_leki||''}" placeholder="np. lidokaina, penicylina, brak">
+        </div>
+      </div>
+    </div>
+
+    <!-- BADANIA LABORATORYJNE -->
+    <div class="section" id="sec_badania">
+      <div class="section-header" onclick="toggleSection('sec_badania')">
+        <div class="section-header-left">
+          <span class="section-label">05</span>
+          <span class="section-title">Badania laboratoryjne</span>
+        </div>
+        <span class="section-chevron">▾</span>
+      </div>
+      <div class="section-body">
+        <div class="field" style="margin-bottom:12px;">
+          <label>Data ostatnich badań</label>
+          <input type="date" id="i_data_badan" value="${d.data_badan||''}">
+        </div>
+        <div style="overflow-x:auto;">
+          <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <thead>
+              <tr style="background:var(--gray-section);">
+                <th style="padding:7px 10px;text-align:left;border:1px solid var(--gray-border);font-size:11px;letter-spacing:0.05em;">Parametr</th>
+                <th style="padding:7px 10px;text-align:left;border:1px solid var(--gray-border);font-size:11px;">Wynik</th>
+                <th style="padding:7px 10px;text-align:left;border:1px solid var(--gray-border);font-size:11px;">Norma</th>
+                <th style="padding:7px 10px;text-align:left;border:1px solid var(--gray-border);font-size:11px;">Ocena</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${[
+                ['TSH','—','0.27–4.20 µIU/ml'],
+                ['FT3','—','3.1–6.8 pmol/l'],
+                ['FT4','—','12–22 pmol/l'],
+                ['ATPO','—','< 34 IU/ml'],
+                ['ATg','—','< 115 IU/ml'],
+                ['Ferrytyna','—','> 70 µg/l (optymalnie)'],
+                ['Żelazo','—','60–170 µg/dl'],
+                ['Hemoglobina','—','12–16 g/dl (K)'],
+                ['Witamina D3','—','> 30 ng/ml'],
+                ['Witamina B12','—','200–900 pg/ml'],
+                ['Cynk','—','70–120 µg/dl'],
+                ['Testosteron całkowity','—','0.5–2.0 ng/ml (K)'],
+                ['DHEA-S','—','dep. wiek'],
+                ['Prolaktyna','—','5–30 ng/ml'],
+                ['Kortyzol','—','6–18 µg/dl (rano)'],
+                ['Glukoza','—','70–99 mg/dl'],
+                ['Insulina','—','< 10 µIU/ml'],
+                ['HOMA-IR','—','< 2.0'],
+                ['ANA 1','—','neg.'],
+                ['Morfologia','—',''],
+              ].map(([param, norma_lab, norma], i) => `
+                <tr style="${i%2===0?'':'background:var(--gray-bg)'}">
+                  <td style="padding:6px 10px;border:1px solid var(--gray-border);font-weight:500;">${param}</td>
+                  <td style="padding:4px 8px;border:1px solid var(--gray-border);">
+                    <input type="text" style="border:none;background:transparent;width:100%;font-family:'DM Mono',monospace;font-size:12px;outline:none;" 
+                           id="lab_${param.replace(/[^a-zA-Z0-9]/g,'_')}" 
+                           value="${(d.lab&&d.lab[param.replace(/[^a-zA-Z0-9]/g,'_')])||''}" placeholder="—">
+                  </td>
+                  <td style="padding:6px 10px;border:1px solid var(--gray-border);color:var(--gray-light);font-size:11px;font-family:'DM Mono',monospace;">${norma}</td>
+                  <td style="padding:4px 8px;border:1px solid var(--gray-border);">
+                    <select style="border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:12px;outline:none;cursor:pointer;"
+                            id="labeval_${param.replace(/[^a-zA-Z0-9]/g,'_')}">
+                      <option value="">—</option>
+                      <option value="ok" ${(d.labeval&&d.labeval[param.replace(/[^a-zA-Z0-9]/g,'_')]==='ok')?'selected':''}>✓ W normie</option>
+                      <option value="low" ${(d.labeval&&d.labeval[param.replace(/[^a-zA-Z0-9]/g,'_')]==='low')?'selected':''}>↓ Poniżej</option>
+                      <option value="high" ${(d.labeval&&d.labeval[param.replace(/[^a-zA-Z0-9]/g,'_')]==='high')?'selected':''}>↑ Powyżej</option>
+                    </select>
+                  </td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+        <div class="field mt-12">
+          <label>Inne badania / komentarz</label>
+          <textarea id="i_inne_badania" placeholder="np. biopsja skóry głowy, hormonogram, inne...">${d.inne_badania||''}</textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- HORMONY / GINEKOLOGIA -->
+    <div class="section" id="sec_gin">
+      <div class="section-header" onclick="toggleSection('sec_gin')">
+        <div class="section-header-left">
+          <span class="section-label">06</span>
+          <span class="section-title">Wywiad hormonalny / ginekologiczny</span>
+        </div>
+        <span class="section-chevron">▾</span>
+      </div>
+      <div class="section-body">
+        <div class="form-grid">
+          <div class="field">
+            <label>Data ostatniej miesiączki</label>
+            <input type="date" id="i_lmp" value="${d.lmp||''}">
+          </div>
+          <div class="field">
+            <label>Regularność cyklu</label>
+            <select id="i_cykl">
+              ${['—','regularny','nieregularny','brak miesiączki','menopauza','po histerektomii'].map(x=>`<option ${d.cykl===x?'selected':''}>${x}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field">
+            <label>Ciąże / porody</label>
+            <input type="text" id="i_ciaze" value="${d.ciaze||''}" placeholder="np. 2 ciąże, 2 porody">
+          </div>
+          <div class="field">
+            <label>Aktualna ciąża / połóg</label>
+            <select id="i_ciaza_akt">
+              ${['—','ciąża','połóg (< 6 mies.)','karmienie piersią','nie'].map(x=>`<option ${d.ciaza_akt===x?'selected':''}>${x}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+        <div class="field mt-12">
+          <label>Dodatkowe uwagi hormonalne</label>
+          <textarea id="i_hormony_uw" placeholder="Hirsutyzm, trądzik, PCOS, inne objawy androgenizacji...">${d.hormony_uw||''}</textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIETA I STYL ŻYCIA -->
+    <div class="section" id="sec_dieta">
+      <div class="section-header" onclick="toggleSection('sec_dieta')">
+        <div class="section-header-left">
+          <span class="section-label">07</span>
+          <span class="section-title">Dieta i styl życia</span>
+        </div>
+        <span class="section-chevron">▾</span>
+      </div>
+      <div class="section-body">
+        <div class="form-grid">
+          <div class="field">
+            <label>Typ diety</label>
+            <select id="i_dieta">
+              ${['—','zbilansowana','wegetariańska','wegańska','bezglutenowa','ketogeniczna','restrykcyjna kaloryczna','eliminacyjna','nieregularna'].map(x=>`<option ${d.dieta===x?'selected':''}>${x}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field">
+            <label>Ilość posiłków / dzień</label>
+            <select id="i_posilki">
+              ${['—','1–2','3','4–5','> 5','nieregularnie'].map(x=>`<option ${d.posilki===x?'selected':''}>${x}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field">
+            <label>Nawodnienie (woda / dzień)</label>
+            <select id="i_woda_pic">
+              ${['—','< 1l','1–1.5l','1.5–2l','> 2l'].map(x=>`<option ${d.woda_pic===x?'selected':''}>${x}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field">
+            <label>Aktywność fizyczna</label>
+            <select id="i_aktywnosc">
+              ${['—','brak','< 1x/tydz','1–2x/tydz','3–4x/tydz','codziennie'].map(x=>`<option ${d.aktywnosc===x?'selected':''}>${x}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field">
+            <label>Stres (ocena własna 1–10)</label>
+            <div class="scale-row" id="scale_stres">
+              ${[1,2,3,4,5,6,7,8,9,10].map(n=>`<button type="button" class="scale-btn ${d.stres==n?'active':''}" onclick="setScale('stres',${n},this)">${n}</button>`).join('')}
+            </div>
+          </div>
+          <div class="field">
+            <label>Jakość snu (1–10)</label>
+            <div class="scale-row" id="scale_sen">
+              ${[1,2,3,4,5,6,7,8,9,10].map(n=>`<button type="button" class="scale-btn ${d.sen==n?'active':''}" onclick="setScale('sen',${n},this)">${n}</button>`).join('')}
+            </div>
+          </div>
+        </div>
+        <div class="check-grid mt-12">
+          ${['Palenie tytoniu','Alkohol regularnie','Używki inne','Praca zmianowa / nocna','Praca w wysokiej temperaturze','Ekspozycja na chemikalia zawodowe'].map(x=>`
+            <label class="check-item ${(d.styl||[]).includes(x)?'checked':''}">
+              <input type="checkbox" name="styl" value="${x}" ${(d.styl||[]).includes(x)?'checked':''} onchange="this.closest('.check-item').classList.toggle('checked',this.checked)">
+              ${x}
+            </label>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <!-- PIELĘGNACJA -->
+    <div class="section" id="sec_piel">
+      <div class="section-header" onclick="toggleSection('sec_piel')">
+        <div class="section-header-left">
+          <span class="section-label">08</span>
+          <span class="section-title">Pielęgnacja włosów i skóry głowy</span>
+        </div>
+        <span class="section-chevron">▾</span>
+      </div>
+      <div class="section-body">
+        <div class="form-grid">
+          <div class="field">
+            <label>Częstotliwość mycia głowy</label>
+            <select id="i_mycie">
+              ${['—','codziennie','co 2 dni','2–3x/tydz','1x/tydz','rzadziej'].map(x=>`<option ${d.mycie===x?'selected':''}>${x}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field">
+            <label>Temperatura wody do mycia</label>
+            <select id="i_temp_mycia">
+              ${['—','zimna','letnia','ciepła','gorąca'].map(x=>`<option ${d.temp_mycia===x?'selected':''}>${x}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field">
+            <label>Aktualne szampony / kosmetyki</label>
+            <textarea id="i_kosmetyki" style="min-height:50px;" placeholder="Nazwy preparatów...">${d.kosmetyki||''}</textarea>
+          </div>
+          <div class="field">
+            <label>Wcześniej stosowane leczenie / kuracje</label>
+            <textarea id="i_poprz_leczenie" style="min-height:50px;" placeholder="Poprzednie terapie...">${d.poprz_leczenie||''}</textarea>
+          </div>
+        </div>
+        <div class="field mt-12">
+          <label>Zabiegi fryzjerskie — zaznacz</label>
+          <div class="check-grid">
+            ${['Koloryzacja regularna','Rozjaśnianie','Trwała ondulacja','Prostowanie chemiczne','Keratyna / nanoplastia','Przedłużanie włosów','Tapirowanie','Regularne termiczne stylizacje','Brak zabiegów chemicznych'].map(x=>`
+              <label class="check-item ${(d.zabiegi_fryz||[]).includes(x)?'checked':''}">
+                <input type="checkbox" name="zabiegi_fryz" value="${x}" ${(d.zabiegi_fryz||[]).includes(x)?'checked':''} onchange="this.closest('.check-item').classList.toggle('checked',this.checked)">
+                ${x}
+              </label>`).join('')}
+          </div>
+        </div>
+        <div class="field mt-12">
+          <label>Nakrycia głowy / foliowanie</label>
+          <div class="check-grid-3">
+            ${['Regularne nakrycia głowy','Ciasne fryzury (kucyk, warkocze)','Ekstensje / hafty','Peruczka','Foliowanie skóry głowy'].map(x=>`
+              <label class="check-item ${(d.nakrycia||[]).includes(x)?'checked':''}">
+                <input type="checkbox" name="nakrycia" value="${x}" ${(d.nakrycia||[]).includes(x)?'checked':''} onchange="this.closest('.check-item').classList.toggle('checked',this.checked)">
+                ${x}
+              </label>`).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WYWIAD RODZINNY -->
+    <div class="section" id="sec_rodz">
+      <div class="section-header" onclick="toggleSection('sec_rodz')">
+        <div class="section-header-left">
+          <span class="section-label">09</span>
+          <span class="section-title">Wywiad rodzinny i genetyczny</span>
+        </div>
+        <span class="section-chevron">▾</span>
+      </div>
+      <div class="section-body">
+        <div class="check-grid">
+          ${['Łysienie androgenowe (ojciec)','Łysienie androgenowe (matka)','Łysienie androgenowe (dziadek)','Łysienie plackowate w rodzinie','Choroby tarczycy w rodzinie','Choroby autoimmunologiczne','PCOS w rodzinie','Łuszczyca w rodzinie','Łojotokowe zapalenie skóry','Bielactwo w rodzinie'].map(x=>`
+            <label class="check-item ${(d.rodzina||[]).includes(x)?'checked':''}">
+              <input type="checkbox" name="rodzina" value="${x}" ${(d.rodzina||[]).includes(x)?'checked':''} onchange="this.closest('.check-item').classList.toggle('checked',this.checked)">
+              ${x}
+            </label>`).join('')}
+        </div>
+        <div class="field mt-12">
+          <label>Komentarz do wywiadu rodzinnego</label>
+          <textarea id="i_rodz_uw" placeholder="Dodatkowe informacje...">${d.rodz_uw||''}</textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALERGIE -->
+    <div class="section" id="sec_alerg">
+      <div class="section-header" onclick="toggleSection('sec_alerg')">
+        <div class="section-header-left">
+          <span class="section-label">10</span>
+          <span class="section-title">Alergie i nadwrażliwości</span>
+        </div>
+        <span class="section-chevron">▾</span>
+      </div>
+      <div class="section-body">
+        <div class="check-grid">
+          ${['Alergia wziewna (pyłki, kurz)','Alergia pokarmowa','Alergia kontaktowa skóry','Nadwrażliwość na kosmetyki','Nadwrażliwość na metale (nikiel)','Astma','Atopia','Łuszczyca atopowa'].map(x=>`
+            <label class="check-item ${(d.alergie||[]).includes(x)?'checked':''}">
+              <input type="checkbox" name="alergie" value="${x}" ${(d.alergie||[]).includes(x)?'checked':''} onchange="this.closest('.check-item').classList.toggle('checked',this.checked)">
+              ${x}
+            </label>`).join('')}
+        </div>
+        <div class="field mt-12">
+          <label>Szczegóły alergii / test alergologiczny</label>
+          <textarea id="i_alergie_opis" placeholder="Alergeny, wynik testów, reakcje...">${d.alergie_opis||''}</textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTATKI KLINICZNE -->
+    <div class="section" id="sec_notatki">
+      <div class="section-header" onclick="toggleSection('sec_notatki')">
+        <div class="section-header-left">
+          <span class="section-label">11</span>
+          <span class="section-title">Notatki kliniczne z I wizyty</span>
+        </div>
+        <span class="section-chevron">▾</span>
+      </div>
+      <div class="section-body">
+        <div class="trichoscopy-grid" style="margin-bottom:14px;">
+          <div class="tricho-box">
+            <div class="tricho-box-header">
+              <span class="label">Trichoskopia</span>
+              <span class="mag">20x</span>
+            </div>
+            <div class="tricho-box-body">
+              <textarea class="field" id="i_tricho_20" placeholder="Rozmieszczenie, gęstość, ujścia mieszków, stan ogólny...">${d.tricho_20||''}</textarea>
+            </div>
+          </div>
+          <div class="tricho-box">
+            <div class="tricho-box-header">
+              <span class="label">Trichoskopia</span>
+              <span class="mag">70x</span>
+            </div>
+            <div class="tricho-box-body">
+              <textarea class="field" id="i_tricho_70" placeholder="Struktura łodygi, cebulka, otoczka, naczynia, złogi...">${d.tricho_70||''}</textarea>
+            </div>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Wynik pull test</label>
+            <select id="i_pull_test">
+              ${['—','ujemny','dodatni (≥10 włosów)','silnie dodatni','trudny do oceny (krótkie włosy)'].map(x=>`<option ${d.pull_test===x?'selected':''}>${x}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field">
+            <label>Wstępne rozpoznanie</label>
+            <input type="text" id="i_rozpoznanie" value="${d.rozpoznanie||''}" placeholder="np. AGA II°, TE, ŁPP, ŁZS...">
+          </div>
+        </div>
+        <div class="field mt-12">
+          <label>Notatki własne specjalisty</label>
+          <textarea id="i_notatki" style="min-height:100px;" placeholder="Obserwacje, wnioski kliniczne, dodatkowe uwagi...">${d.notatki||''}</textarea>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:right;margin-top:16px;">
+      <button class="btn btn-primary" onclick="saveIntake()">💾 Zapisz cały wywiad</button>
+    </div>
+  `;
+}
+
+// ===== SAVE INTAKE =====
+function saveIntake() {
+  const p = getPatient(currentPatientId);
+  if (!p) return;
+
+  const d = {};
+
+  // Simple fields
+  ['zawod','stan','miejsce','woda','czas_dolg','opis_dolg','inne_choroby','operacje','urazy',
+   'leki','suplementy','alergie_leki','data_badan','inne_badania','lmp','cykl','ciaze',
+   'ciaza_akt','hormony_uw','dieta','posilki','woda_pic','aktywnosc','mycie','temp_mycia',
+   'kosmetyki','poprz_leczenie','rodz_uw','alergie_opis','pull_test','rozpoznanie','notatki',
+   'i_notatki','sezonowosc','pojawienie','tricho_20','tricho_70'].forEach(key => {
+    const el = document.getElementById(`i_${key}`) || document.getElementById(`i_${key}`);
+    if (el) d[key] = el.value;
+  });
+
+  // Checkboxes
+  ['objawy','choroby','leki_wplyw','styl','zabiegi_fryz','nakrycia','rodzina','alergie'].forEach(name => {
+    d[name] = [...document.querySelectorAll(`input[name="${name}"]:checked`)].map(el => el.value);
+  });
+
+  // Scales
+  ['nasilenie','jakosc','stres','sen'].forEach(key => {
+    const active = document.querySelector(`#scale_${key} .scale-btn.active`);
+    if (active) d[key] = parseInt(active.textContent);
+  });
+
+  // Lab values
+  const labParams = ['TSH','FT3','FT4','ATPO','ATg','Ferrytyna','Żelazo','Hemoglobina',
+    'Witamina D3','Witamina B12','Cynk','Testosteron całkowity','DHEA-S','Prolaktyna',
+    'Kortyzol','Glukoza','Insulina','HOMA-IR','ANA 1','Morfologia'];
+  d.lab = {}; d.labeval = {};
+  labParams.forEach(param => {
+    const key = param.replace(/[^a-zA-Z0-9]/g,'_');
+    const el = document.getElementById(`lab_${key}`);
+    const evalEl = document.getElementById(`labeval_${key}`);
+    if (el) d.lab[key] = el.value;
+    if (evalEl) d.labeval[key] = evalEl.value;
+  });
+
+  d._saved = new Date().toISOString().slice(0,10);
+  p.intake = d;
+  save();
+  renderPatientView();
+  alert('Wywiad zapisany ✓');
+}
+
+// ===== SCALES =====
+function setScale(name, value, btn) {
+  const container = document.getElementById(`scale_${name}`);
+  if (!container) return;
+  container.querySelectorAll('.scale-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ===== VISITS TAB =====
+function renderVisitsTab(p, container) {
+  const visits = p.visits || [];
+
+  const summaryHtml = `
+    <div class="summary-grid">
+      <div class="summary-card">
+        <span class="num">${visits.length}</span>
+        <span class="lbl">Wszystkie wizyty</span>
+      </div>
+      <div class="summary-card">
+        <span class="num">${visits.filter(v=>(v.types||[]).includes('kontrolna')).length}</span>
+        <span class="lbl">Kontrolne</span>
+      </div>
+      <div class="summary-card">
+        <span class="num">${visits.filter(v=>(v.types||[]).includes('zabiegowa')).length}</span>
+        <span class="lbl">Zabiegowe</span>
+      </div>
+      <div class="summary-card">
+        <span class="num">${visits.length > 0 ? formatDate(visits[visits.length-1].date) : '—'}</span>
+        <span class="lbl">Ostatnia wizyta</span>
+      </div>
+    </div>`;
+
+  if (visits.length === 0) {
+    container.innerHTML = summaryHtml + `
+      <div class="no-visits">
+        <div style="font-size:32px;">📅</div>
+        <p>Brak wpisów wizyt. Kliknij <strong>+ Nowa wizyta</strong> w nagłówku.</p>
+      </div>`;
+    return;
+  }
+
+  const visitsHtml = [...visits].reverse().map((v, ri) => {
+    const num = visits.length - ri;
+    const typeTags = (v.types||[]).map(t => `<span class="visit-type-tag tag-${t}">${t}</span>`).join('');
+    const vd = v.data || {};
+
+    return `
+      <div class="visit-card ${v._expanded ? 'expanded' : ''}" id="visit_${v.id}">
+        <div class="visit-card-header" onclick="toggleVisit('${v.id}')">
+          <div class="visit-card-header-left">
+            <div class="visit-number">${num}</div>
+            <div class="visit-info">
+              <div class="visit-date">${formatDate(v.date)}</div>
+              <div class="visit-type-tags">${typeTags || '<span style="font-size:11px;color:var(--gray-light)">brak typu</span>'}</div>
+            </div>
+          </div>
+          <div class="visit-card-actions">
+            <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteVisit('${v.id}')">🗑</button>
+            <span class="visit-card-chevron">▾</span>
+          </div>
+        </div>
+        <div class="visit-card-body">
+          ${renderVisitForm(v)}
+          <div style="text-align:right;margin-top:16px;">
+            <button class="btn btn-primary btn-sm" onclick="saveVisit('${v.id}')">💾 Zapisz wizytę</button>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+
+  container.innerHTML = summaryHtml + '<div class="visits-timeline">' + visitsHtml + '</div>';
+}
+
+function renderVisitForm(v) {
+  const vd = v.data || {};
+  return `
+    <!-- SUBIEKTYWNA OCENA -->
+    <div class="subsection">
+      <div class="subsection-title">Ocena subiektywna pacjenta</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Czy pacjent odczuwa poprawę?</label>
+          <select id="vf_${v.id}_poprawa">
+            ${['—','zdecydowana poprawa','niewielka poprawa','bez zmian','pogorszenie','trudno ocenić'].map(x=>`<option ${vd.poprawa===x?'selected':''}>${x}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field">
+          <label>Samoocena wypadania (1–10)</label>
+          <div class="scale-row" id="vscale_${v.id}_wypadanie">
+            ${[1,2,3,4,5,6,7,8,9,10].map(n=>`<button type="button" class="scale-btn ${vd.wypadanie==n?'active':''}" onclick="setScaleVisit('${v.id}','wypadanie',${n},this)">${n}</button>`).join('')}
+            <span class="scale-label">mniej → więcej</span>
+          </div>
+        </div>
+        <div class="field form-full">
+          <label>Nowe dolegliwości / zmiany od ostatniej wizyty</label>
+          <textarea id="vf_${v.id}_zmiany" placeholder="Co pacjent zgłasza...">${vd.zmiany||''}</textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPLIANCE -->
+    <div class="subsection">
+      <div class="subsection-title">Compliance — realizacja zaleceń</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Stosowanie zaleceń z poprzedniej wizyty</label>
+          <select id="vf_${v.id}_compliance">
+            ${['—','pełne','częściowe (> 80%)','częściowe (< 50%)','brak','nie dotyczy (I wizyta)'].map(x=>`<option ${vd.compliance===x?'selected':''}>${x}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field">
+          <label>Powód niestosowania / trudności</label>
+          <textarea id="vf_${v.id}_compliance_uw" style="min-height:50px;" placeholder="Koszt, skutki uboczne, zapomnienie...">${vd.compliance_uw||''}</textarea>
+        </div>
+        <div class="field">
+          <label>Stosowane kosmetyki / preparaty</label>
+          <textarea id="vf_${v.id}_stosowane" style="min-height:50px;" placeholder="Co faktycznie stosował/a pacjent...">${vd.stosowane||''}</textarea>
+        </div>
+        <div class="field">
+          <label>Stosowane suplementy / leki</label>
+          <textarea id="vf_${v.id}_suplementy" style="min-height:50px;" placeholder="Preparaty, dawki, regularność...">${vd.suplementy||''}</textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- BADANIE FIZYKALNE -->
+    <div class="subsection">
+      <div class="subsection-title">Badanie fizykalne</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Pull test</label>
+          <select id="vf_${v.id}_pull_test">
+            ${['—','ujemny','dodatni','silnie dodatni','nie wykonano'].map(x=>`<option ${vd.pull_test===x?'selected':''}>${x}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field">
+          <label>Łojotok skóry głowy</label>
+          <select id="vf_${v.id}_lojotok">
+            ${['—','brak','minimalny','umiarkowany','nasilony'].map(x=>`<option ${vd.lojotok===x?'selected':''}>${x}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field">
+          <label>Stan zapalny / rumień</label>
+          <select id="vf_${v.id}_zapalenie">
+            ${['—','brak','minimalny','ogniskowy','rozlany','nasilony'].map(x=>`<option ${vd.zapalenie===x?'selected':''}>${x}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field">
+          <label>Złuszczanie / łupież</label>
+          <select id="vf_${v.id}_lupież">
+            ${['—','brak','drobne (suchy)','duże płaty (tłusty)','strupki / twardy'].map(x=>`<option ${vd['lupież']===x?'selected':''}>${x}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field">
+          <label>Ogólna gęstość włosów (ocena wzrokowa)</label>
+          <select id="vf_${v.id}_gestosc">
+            ${['—','normalna','lekko zmniejszona','umiarkowanie zmniejszona','znacznie zmniejszona','łysina'].map(x=>`<option ${vd.gestosc===x?'selected':''}>${x}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field">
+          <label>Notatki z badania fizykalnego</label>
+          <textarea id="vf_${v.id}_fizykal_uw" style="min-height:50px;" placeholder="Dodatkowe obserwacje...">${vd.fizykal_uw||''}</textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRICHOSKOPIA -->
+    <div class="subsection">
+      <div class="subsection-title">Trichoskopia</div>
+      <div class="trichoscopy-grid">
+        <div class="tricho-box">
+          <div class="tricho-box-header">
+            <span class="label">Małe powiększenie</span>
+            <span class="mag">20x</span>
+          </div>
+          <div class="tricho-box-body">
+            <textarea id="vf_${v.id}_tricho_20" placeholder="Rozmieszczenie, gęstość, ujścia mieszków, obszary przerzedzenia, wzorzec łysienia, naczynia okołomieszkowe...">${vd.tricho_20||''}</textarea>
+          </div>
+        </div>
+        <div class="tricho-box">
+          <div class="tricho-box-header">
+            <span class="label">Duże powiększenie</span>
+            <span class="mag">70x</span>
+          </div>
+          <div class="tricho-box-body">
+            <textarea id="vf_${v.id}_tricho_70" placeholder="Struktura łodygi, stan cebulki, otoczka włosa, złogi, zmiany atroficzne, miniaturyzacja...">${vd.tricho_70||''}</textarea>
+          </div>
+        </div>
+      </div>
+      <div class="form-grid mt-12">
+        <div class="field">
+          <label>Parametry FotoFinder / inne (opcjonalnie)</label>
+          <textarea id="vf_${v.id}_fotofinder" style="min-height:50px;" placeholder="Gęstość [/cm²], grubość średnia [µm], stosunek T:V, inne dane...">${vd.fotofinder||''}</textarea>
+        </div>
+        <div class="field">
+          <label>Porównanie z poprzednią wizytą</label>
+          <select id="vf_${v.id}_tricho_zmiana">
+            ${['—','wyraźna poprawa','nieznaczna poprawa','bez zmian','pogorszenie','I wizyta — brak porównania'].map(x=>`<option ${vd.tricho_zmiana===x?'selected':''}>${x}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- ZABIEGI -->
+    <div class="subsection">
+      <div class="subsection-title">Wykonane zabiegi</div>
+      <div class="check-grid" style="margin-bottom:12px;">
+        ${['Mezoterapia skóry głowy','PRP (osocze bogatopłytkowe)','Karboksyterapia','Mikronakłuwanie (dermapen)','Laser diodowy','Peeling enzymatyczny/kwasowy','Masaż skóry głowy','Jonoforeza','Infuzja tlenowa','Aplikacja ampułek/serumów','Darsonval','Ultradźwięki (sonoforeza)','Elektrostymulacja','Ozone therapy','Inne'].map(x=>`
+          <label class="check-item ${(vd.zabiegi||[]).includes(x)?'checked':''}">
+            <input type="checkbox" name="zabiegi_${v.id}" value="${x}" ${(vd.zabiegi||[]).includes(x)?'checked':''} onchange="this.closest('.check-item').classList.toggle('checked',this.checked)">
+            ${x}
+          </label>`).join('')}
+      </div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Parametry zabiegu (dawki, czas, obszar)</label>
+          <textarea id="vf_${v.id}_zabieg_parametry" style="min-height:60px;" placeholder="np. Mezoterapia: 0.5ml HA + 0.5ml koktajl witaminowy, 32G, cały cap, 15min...">${vd.zabieg_parametry||''}</textarea>
+        </div>
+        <div class="field">
+          <label>Reakcja pacjenta na zabieg</label>
+          <textarea id="vf_${v.id}_reakcja" style="min-height:60px;" placeholder="Tolerancja, ból, rumień po zabiegu, inne...">${vd.reakcja||''}</textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- ZALECENIA -->
+    <div class="subsection">
+      <div class="subsection-title">Zalecenia na kolejny okres</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Kosmetyki zalecane (z dawkowaniem)</label>
+          <textarea id="vf_${v.id}_kosmetyki_zal" style="min-height:70px;" placeholder="np. Szampon X — 2x/tydz, Ampułka Y — codziennie wieczorem 1ml, Maska Z — 1x/tydz...">${vd.kosmetyki_zal||''}</textarea>
+        </div>
+        <div class="field">
+          <label>Suplementacja zalecana</label>
+          <textarea id="vf_${v.id}_supl_zal" style="min-height:70px;" placeholder="np. Ferrytyna poniżej normy — Chelat żelaza 30mg 1x/dzień z wit.C, Witamina D3 4000IU...">${vd.supl_zal||''}</textarea>
+        </div>
+        <div class="field">
+          <label>Badania do wykonania</label>
+          <textarea id="vf_${v.id}_badania_zal" style="min-height:60px;" placeholder="np. Morfologia, TSH, ferrytyna, witamina D3 — za 3 miesiące...">${vd.badania_zal||''}</textarea>
+        </div>
+        <div class="field">
+          <label>Termin kolejnej wizyty</label>
+          <input type="date" id="vf_${v.id}_kolejna_wizyta" value="${vd.kolejna_wizyta||''}">
+        </div>
+        <div class="field form-full">
+          <label>Zalecenia dodatkowe (dieta, styl życia, zachowania)</label>
+          <textarea id="vf_${v.id}_zalecenia_inne" placeholder="np. Unikać tapirowania, zwiększyć spożycie białka, techniki redukcji stresu...">${vd.zalecenia_inne||''}</textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTATKI KLINICZNE -->
+    <div class="subsection">
+      <div class="subsection-title">Notatki kliniczne specjalisty</div>
+      <div class="field">
+        <label>Rozpoznanie / diagnoza (aktualna)</label>
+        <input type="text" id="vf_${v.id}_rozpoznanie" value="${vd.rozpoznanie||''}" placeholder="np. AGA II° wg Ludwiga, TE przewlekłe, ŁPP w remisji...">
+      </div>
+      <div class="field mt-12">
+        <label>Notatki wolne</label>
+        <textarea id="vf_${v.id}_notatki" style="min-height:100px;" placeholder="Obserwacje, wnioski, plan terapeutyczny, inne uwagi kliniczne...">${vd.notatki||''}</textarea>
+      </div>
+    </div>
+  `;
+}
+
+function setScaleVisit(visitId, name, value, btn) {
+  const container = document.getElementById(`vscale_${visitId}_${name}`);
+  if (!container) return;
+  container.querySelectorAll('.scale-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ===== SAVE VISIT =====
+function saveVisit(visitId) {
+  const p = getPatient(currentPatientId);
+  if (!p) return;
+  const v = (p.visits||[]).find(x => x.id === visitId);
+  if (!v) return;
+
+  const vd = {};
+  const fields = ['poprawa','zmiany','compliance','compliance_uw','stosowane','suplementy',
+    'pull_test','lojotok','zapalenie','lupież','gestosc','fizykal_uw',
+    'tricho_20','tricho_70','fotofinder','tricho_zmiana',
+    'zabieg_parametry','reakcja','kosmetyki_zal','supl_zal','badania_zal',
+    'kolejna_wizyta','zalecenia_inne','rozpoznanie','notatki'];
+
+  fields.forEach(key => {
+    const el = document.getElementById(`vf_${visitId}_${key}`);
+    if (el) vd[key] = el.value;
+  });
+
+  // Scale wypadanie
+  const wypadScaleActive = document.querySelector(`#vscale_${visitId}_wypadanie .scale-btn.active`);
+  if (wypadScaleActive) vd.wypadanie = parseInt(wypadScaleActive.textContent);
+
+  // Checkboxes zabiegi
+  vd.zabiegi = [...document.querySelectorAll(`input[name="zabiegi_${visitId}"]:checked`)].map(el => el.value);
+
+  v.data = vd;
+  save();
+  alert('Wizyta zapisana ✓');
+}
+
+// ===== TOGGLE VISIT EXPAND =====
+function toggleVisit(visitId) {
+  const p = getPatient(currentPatientId);
+  if (!p) return;
+  const v = (p.visits||[]).find(x => x.id === visitId);
+  if (!v) return;
+  v._expanded = !v._expanded;
+  save();
+  renderPatientView();
+  switchTab('wizyty');
+}
+
+// ===== TOGGLE SECTION =====
+function toggleSection(id) {
+  document.getElementById(id).classList.toggle('collapsed');
+}
+
+// ===== MODALS =====
+function openNewPatientModal() {
+  document.getElementById('np_name').value = '';
+  document.getElementById('np_dob').value = '';
+  document.getElementById('np_phone').value = '';
+  document.getElementById('np_email').value = '';
+  document.getElementById('np_complaint').value = '';
+  document.getElementById('newPatientModal').classList.remove('hidden');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.add('hidden');
+}
+
+function saveNewPatient() {
+  const name = document.getElementById('np_name').value.trim();
+  if (!name) { alert('Podaj imię i nazwisko.'); return; }
+
+  const p = {
+    id: genId(),
+    name,
+    dob: document.getElementById('np_dob').value,
+    phone: document.getElementById('np_phone').value,
+    email: document.getElementById('np_email').value,
+    complaint: document.getElementById('np_complaint').value,
+    intake: {},
+    visits: [],
+    created: new Date().toISOString().slice(0,10)
+  };
+
+  patients.unshift(p);
+  save();
+  closeModal('newPatientModal');
+  renderSidebar();
+  openPatient(p.id);
+}
+
+function openNewVisitModal() {
+  const p = getPatient(currentPatientId);
+  if (!p) return;
+  document.getElementById('newVisitPatientName').textContent = p.name;
+  document.getElementById('nv_date').value = new Date().toISOString().slice(0,10);
+  document.querySelectorAll('#visitTypeSelector .visit-type-option').forEach(el => el.classList.remove('selected'));
+  document.getElementById('newVisitModal').classList.remove('hidden');
+}
+
+function toggleVisitType(el) {
+  el.classList.toggle('selected');
+}
+
+function saveNewVisit() {
+  const p = getPatient(currentPatientId);
+  if (!p) return;
+  const date = document.getElementById('nv_date').value;
+  if (!date) { alert('Wybierz datę wizyty.'); return; }
+
+  const types = [...document.querySelectorAll('#visitTypeSelector .visit-type-option.selected')].map(el => el.dataset.type);
+
+  const v = {
+    id: genId(),
+    date,
+    types,
+    data: {},
+    _expanded: true
+  };
+
+  if (!p.visits) p.visits = [];
+  p.visits.push(v);
+  save();
+  closeModal('newVisitModal');
+  renderSidebar();
+  activeTab = 'wizyty';
+  renderPatientView();
+}
+
+// ===== DELETE =====
+function deletePatient(id) {
+  if (!confirm('Usunąć pacjenta i wszystkie dane?')) return;
+  patients = patients.filter(p => p.id !== id);
+  currentPatientId = null;
+  save();
+  renderSidebar();
+  document.getElementById('patientView').classList.add('hidden');
+  document.getElementById('welcomeScreen').classList.remove('hidden');
+}
+
+function deleteVisit(visitId) {
+  if (!confirm('Usunąć ten wpis wizyty?')) return;
+  const p = getPatient(currentPatientId);
+  if (!p) return;
+  p.visits = (p.visits||[]).filter(v => v.id !== visitId);
+  save();
+  renderSidebar();
+  renderPatientView();
+  switchTab('wizyty');
+}
+
+// ===== EXPORT / IMPORT =====
+function exportData() {
+  const data = { exported: new Date().toISOString(), version: 1, patients: patients };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const date = new Date().toISOString().slice(0,10);
+  a.href = url;
+  a.download = 'karta-trychologia-backup-' + date + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importData(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data.patients || !Array.isArray(data.patients)) {
+        alert('Nieprawidlowy plik backup.');
+        return;
+      }
+      if (!confirm('Importowac ' + data.patients.length + ' pacjentow? Aktualne dane zostana zastapione.')) return;
+      patients = data.patients;
+      save();
+      currentPatientId = null;
+      renderSidebar();
+      document.getElementById('patientView').classList.add('hidden');
+      document.getElementById('welcomeScreen').classList.remove('hidden');
+      alert('Zaimportowano ' + patients.length + ' pacjentow.');
+    } catch(err) {
+      alert('Blad odczytu pliku JSON.');
+    }
+  };
+  reader.readAsText(file);
+  input.value = '';
+}
+
+// ===== INIT =====
+renderSidebar();
+</script>
+</body>
+</html>
